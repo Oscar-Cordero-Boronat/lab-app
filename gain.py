@@ -62,6 +62,9 @@ class Gain:
         ax.set_ylabel("Gain")        
         ax.set_ylim(self.y_axis)
         ax.set_xlim([0, self.P_th_fitted])
-        ax.grid()
+        ax.grid(True)  # Major grid
+        ax.minorticks_on()  # Enable minor ticks
+        ax.grid(which='minor', color='gray', linestyle=':', linewidth=0.5)  # Minor grid
+
         ax.legend()
         return fig
