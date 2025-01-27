@@ -1,3 +1,8 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Union, List
+from scipy.optimize import curve_fit
+
 class SqEfficiency:
     def __init__(self, 
                  power: np.ndarray, 
@@ -6,7 +11,8 @@ class SqEfficiency:
                  phase_noise: bool = False, 
                  detection_frequency: float = 5, 
                  decay_rate_cavity: float = 20.3,
-                 y_axis = np.array([-3,15])
+                 y_axis = np.array([-3,15]),
+                 P_th = ""
                                             ):
         """
         Initializes the SqEfficiency object with input data for power, squeezing, and antisqueezing values.
@@ -26,6 +32,10 @@ class SqEfficiency:
         self.omega = self._validate_float(detection_frequency, 'Detection Frequency', min_value=0)
         self.gamma = self._validate_float(decay_rate_cavity, 'Decay Rate Cavity', min_value=0)
         self.y_axis = y_axis
+        if P_th:
+           self.P_th = float(P_th)
+        else: 
+            self.P_th = P_th
 
         if (self.phase_noise and len(self.sq_data) + len(self.asq_data) < 3):
             raise KeyError(f"It is required at least 2 squeezing and antisqueezing data") 
@@ -103,8 +113,12 @@ class SqEfficiency:
 
         Updates the fitted parameters: eta, P_th, and phase_noise.
         """
-        initial_guess = [0.8, 50, 0.2] if self.phase_noise else [0.8, 50]
-        param_bounds = ([0, 0, 0], [1, np.inf, np.pi / 4]) if self.phase_noise else ([0, 0], [1, np.inf])
+        if not self.P_th:
+            initial_guess = [0.8, 50, 0.2] if self.phase_noise else [0.8, 50]
+            param_bounds = ([0, 0, 0], [1, np.inf, np.pi / 4]) if self.phase_noise else ([0, 0], [1, np.inf])
+        else:
+            initial_guess = [0.8, self.P_th, 0.2] if self.phase_noise else [0.8, self.P_th]
+            param_bounds = ([0, self.P_th - 1e-3, 0], [1, self.P_th + 1e-3, np.pi / 4]) if self.phase_noise else ([0, self.P_th - 1e-3], [1, self.P_th + 1e-3])
         
         # Fit model to both sq and asq data
         result = curve_fit(
