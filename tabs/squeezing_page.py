@@ -1,4 +1,4 @@
-from sqefficiency import SqEfficiency
+from classes.sqefficiency import SqEfficiency
 import io
 import numpy as np
 import streamlit as st

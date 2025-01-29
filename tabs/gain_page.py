@@ -1,4 +1,4 @@
-from gain import Gain
+from classes.gain import Gain
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
