@@ -272,9 +272,9 @@ class CavityInteraction:
         # Right plot
         # ----------------------------------------------------
 
-        phi_values = np.linspace(0, 2 * np.pi, 25)
+        phi_values = np.linspace(0, 2 * np.pi, 20)
 
-        max_values = np.zeros((25, 25))
+        max_values = np.zeros((20, 20))
 
         for i, phi_R in enumerate(phi_values):
             for j, phi_L in enumerate(phi_values):
@@ -306,10 +306,13 @@ class CavityInteraction:
             interpolation="bicubic",
             vmin=0,
             vmax=1,
-            extent=[0, 2, 0, 2]
+            extent=[0, 2, 0, 2],
         )
 
-        fig.colorbar(im, ax=ax2)
+        cbar = fig.colorbar(im, ax=ax2)
+
+        cbar.ax.tick_params(labelsize=20)
+        cbar.ax.set_yticks([0, 0.5, 1])
 
         ax2.scatter(
             self.phi_L_pi,
@@ -319,6 +322,8 @@ class CavityInteraction:
             marker="x",
             linewidths=4
         )
+
+        ax2.set_title("Maximum reachable normalized interaction.\n Worst case = " + f"{np.min(max_values):.2f}", fontsize=15)
 
         ticks = np.arange(0, 2.1, 0.5)
 
