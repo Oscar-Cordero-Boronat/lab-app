@@ -1,37 +1,32 @@
-import numpy as np
 import streamlit as st
+from classes.cavity_interaction import CavityInteraction
 
-def clearence():
-    st.title("Clearence")
+
+def cavity_interaction():
+    st.title("Cavity Interaction")
 
     st.write(r"""
-    This app removes the electronic noise from your squeezing and antisqueezing signal. It needs the variance of your signal with respect to vacumm $[\text{VAR}(X_1)]$ and the clearence $[CL]$ of your signal.
-""")
-    
-    # st.latex(r"\text{Var(X_2))} = 10log_{10} \Big(10^{VAR(X_1)/10} \Big)")
-    st.latex(r"\text{Var}(X_2) = 10\log_{10} \Big(10^{\frac{VAR(X_1)}{10}}-10^{\frac{CL}{10}}\Big)-10\log_{10} \Big(1-10^{\frac{CL}{10}}\Big)")
-    
-    
-    
-    VAR_X1 = st.text_input(r"Variance without removing clearence $VAR(X_1)\, [\text{{dB}}]$ ", "-5")
-    
-    Clearence = st.text_input(r"Clearence of your signal $CL$ $\, [\text{{dB}}]$", "15")
-    
-    
-    VAR_X1 = float(VAR_X1)
-    Clearence = float(Clearence)
-   
-    
+    This app calculates the cavity nonlinear interaction and maps the cavity phase response.
+    """)
 
-    
-    # Error checks
-    valid_input = True
+    N = st.sidebar.slider("N", 200, 800, 405, 1)
+    lambda_signal = st.sidebar.slider("λs [nm]", 1549.0, 1551.0, 1550.0, 0.1)
+    Lambda0_um = st.sidebar.slider("Λ0 [µm]", 24.603, 24.803, 24.7005, 0.001)
+    phi_R_pi = st.sidebar.slider("φR / π", 0.0, 2.0, 0.0, 0.01)
+    phi_L_pi = st.sidebar.slider("φL / π", 0.0, 2.0, 0.0, 0.01)
+    T_min = st.sidebar.slider("T min [°C]", 0.0, 70.0, 25.0, 0.5)
+    T_max = st.sidebar.slider("T max [°C]", 0.0, 70.0, 50.0, 0.5)
 
-    if not (Clearence > 0):
-        st.error("Your clearence should be greater than zero")
-        valid_input = False
+    analysis = CavityInteraction(
+        N=N,
+        lambda_signal=lambda_signal,
+        Lambda0_um=Lambda0_um,
+        phi_R_pi=phi_R_pi,
+        phi_L_pi=phi_L_pi,
+        T_min=T_min,
+        T_max=T_max,
+    )
 
-    if valid_input:
-        varx2 = -10*np.log10(1-10**(-Clearence / 10))+10*np.log10(10**(VAR_X1 / 10) - 10**(-Clearence/10))
+    fig = analysis.plot()
 
-        st.latex(rf"\text{{Var}}(X_2) = {varx2:.2f}\, \text{{dB}}")
+    st.pyplot(fig)
