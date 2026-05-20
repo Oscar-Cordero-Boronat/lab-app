@@ -34,7 +34,8 @@ class CavityInteraction:
     # Physics functions
     # ========================================================
 
-    def refractive_index_sellmeier(self,
+    def refractive_index_sellmeier(
+        self,
         wavelength_nm,
         A=2.12725,
         B=1.18431,
@@ -43,14 +44,6 @@ class CavityInteraction:
         E=100.00507,
         F=9.68956e-3
     ):
-        """
-        Sellmeier refractive index.
-        
-        Parameters
-        ----------
-        wavelength_nm : float or ndarray
-            Wavelength in nm.
-        """
 
         wavelength_um = wavelength_nm * 1e-3
         lam_sq = wavelength_um**2
@@ -65,9 +58,6 @@ class CavityInteraction:
         return np.sqrt(n_sq)
 
     def delta_n(self, T, wavelength_nm):
-        """
-        Temperature-dependent refractive index correction.
-        """
 
         wavelength_um = wavelength_nm * 1e-3
 
@@ -92,10 +82,8 @@ class CavityInteraction:
 
         return term1 + term2
 
-    def refractive_index(self,wavelength_nm, T=25):
-        """
-        Total refractive index including thermal correction.
-        """
+    def refractive_index(self, wavelength_nm, T):
+
         return (
             self.refractive_index_sellmeier(wavelength_nm)
             + self.delta_n(T, wavelength_nm)
@@ -166,7 +154,7 @@ class CavityInteraction:
 
     def double_resonance_T(self, Ts):
 
-        L = self.poling_period(Ts) * self.N
+        L = self.poling_period(Ts)
 
         lambda_pump_nm = self.lambda_signal / 2
 
@@ -178,9 +166,10 @@ class CavityInteraction:
             + 2 * self.phi_L
             + 2 * self.phi_R
         ) % (2 * np.pi)
-        indices = np.where(np.diff(phase) < -2)[0]        
-        return indices, Ts[indices]
 
+        indices = np.where(np.diff(phase) < -2)[0]
+
+        return indices, Ts[indices]
 
     # ========================================================
     # Plot
@@ -203,20 +192,20 @@ class CavityInteraction:
         # ----------------------------------------------------
 
         field1 = self.single_pass(Ts)
-        abs_field1 = np.abs(field1)**2
+
         ax1.plot(
             Ts,
-            abs_field1 / np.max(abs_field1),
+            np.abs(field1)**2 / np.max(np.abs(field1)**2),
             linewidth=2,
             label="Single pass"
         )
 
         field2_ref = self.cavity(Ts)
+
         normalization_factor = np.max(np.abs(field2_ref)**2)
 
-
-
         field2 = self.cavity(Ts)
+
         abs_field2 = np.abs(field2)**2 / normalization_factor
 
         ax1.plot(
@@ -275,13 +264,15 @@ class CavityInteraction:
                 self.phi_L = phi_L
 
                 field = self.cavity(Ts_map)
-                abs_field = np.abs(field)**2 / normalization_factor
+
+                abs_field = np.abs(field)**2
+
                 indices, resonance_Ts = self.double_resonance_T(Ts_map)
+
                 valid_mask = (
                     (resonance_Ts >= self.T_min)
                     & (resonance_Ts <= self.T_max)
                 )
-
 
                 valid_indices = indices[valid_mask]
 
@@ -300,6 +291,7 @@ class CavityInteraction:
             vmax=1,
             extent=[0, 2, 0, 2]
         )
+        print(max_values)
 
         fig.colorbar(im, ax=ax2)
 
