@@ -217,6 +217,8 @@ class CavityInteraction:
             label="Single pass"
         )
 
+        ax1.set_title(f"Length Crystal = {self.Lambda0 * self.N * 1e3:.1f} mm", fontsize=20)
+
         field2_ref = self.cavity(Ts, flag=True)
         normalization_factor = np.max(np.abs(field2_ref)**2)
 
@@ -239,7 +241,6 @@ class CavityInteraction:
             & (resonance_Ts <= self.T_max)
         )
 
-        resonance_Ts_mask = resonance_Ts[valid_mask]
 
         for i, T_res in enumerate(resonance_Ts):
 
@@ -261,10 +262,11 @@ class CavityInteraction:
 
         ax1.grid(True, alpha=0.3)
 
-        ax1.set_xlabel("Temperature (°C)")
-        ax1.set_ylabel("Normalized interaction strength")
+        ax1.set_xlabel("Temperature (°C)", fontsize=20)
+        ax1.set_ylabel("Normalized interaction strength", fontsize=20)
+        ax1.tick_params(axis='both', labelsize=15)
+        ax1.legend(fontsize=15)
 
-        ax1.legend()
 
         # ----------------------------------------------------
         # Right plot
@@ -328,11 +330,11 @@ class CavityInteraction:
             r"$2\pi$"
         ]
 
-        ax2.set_xticks(ticks, labels)
-        ax2.set_yticks(ticks, labels)
+        ax2.set_xticks(ticks, labels, fontsize=20)
+        ax2.set_yticks(ticks, labels, fontsize=20)
 
-        ax2.set_xlabel(r"$\phi_L$")
-        ax2.set_ylabel(r"$\phi_R$")
+        ax2.set_xlabel(r"$\phi_L$", fontsize=20)
+        ax2.set_ylabel(r"$\phi_R$", fontsize=20)
 
         plt.tight_layout()
 
