@@ -138,7 +138,7 @@ class CavityInteraction:
             * np.sinc((dk * self.L / 2) / np.pi)
         )
 
-    def cavity(self, T):
+    def cavity(self, T, flag=False):
 
         dk = self.delta_k(T)
 
@@ -154,6 +154,12 @@ class CavityInteraction:
         term2 = (
             np.exp(-1j * (self.phi_L + self.L * dk))
             + np.exp(-1j * (self.phi_R + 2 * self.L * dk))
+        )
+
+        if flag:
+            term2 = (
+            np.exp(-1j * (0 + self.L * dk))
+            + np.exp(-1j * (0 + 2 * self.L * dk))
         )
 
         return (
@@ -211,7 +217,7 @@ class CavityInteraction:
             label="Single pass"
         )
 
-        field2_ref = self.cavity(Ts)
+        field2_ref = self.cavity(Ts, flag=True)
         normalization_factor = np.max(np.abs(field2_ref)**2)
 
 
@@ -233,7 +239,7 @@ class CavityInteraction:
             & (resonance_Ts <= self.T_max)
         )
 
-        resonance_Ts = resonance_Ts[valid_mask]
+        resonance_Ts_mask = resonance_Ts[valid_mask]
 
         for i, T_res in enumerate(resonance_Ts):
 
